@@ -1,0 +1,158 @@
+#include <Rcpp.h>
+#include "../inst/include/RcppColMetric.h"
+using namespace Rcpp;
+
+double entropy_empirical(std::map< std::vector<int> ,int > frequencies, int nb_samples) {
+  double e = 0;
+  for (std::map< std::vector<int> ,int>::const_iterator iter = frequencies.begin(); iter != frequencies.end(); ++iter)
+    e -= iter->second * log((double)iter->second);
+  return log((double)nb_samples) + e/nb_samples;
+}
+
+double entropy_miller_madow(std::map< std::vector<int> ,int > frequencies, int nb_samples) {
+  return entropy_empirical(frequencies,nb_samples) + (int(frequencies.size())-1)/(2.0*nb_samples);
+}
+
+double entropy_dirichlet(std::map< std::vector<int> ,int > frequencies, int nb_samples, double beta) {
+  double e = 0;
+  for (std::map< std::vector<int> ,int>::const_iterator iter = frequencies.begin(); iter != frequencies.end(); ++iter)
+    e+=(iter->second+beta)*(R::digamma(nb_samples+(frequencies.size()*beta)+1)-R::digamma(iter->second+beta+1));
+  return e/(nb_samples+(frequencies.size()*beta));
+}
+
+double entropy_shrink(std::map< std::vector<int> ,int > frequencies, int nb_samples)
+{
+  double w = 0;
+  int p = frequencies.size(), n2 = nb_samples*nb_samples;
+  double lambda, beta;
+  for (std::map< std::vector<int> ,int>::const_iterator iter = frequencies.begin(); iter != frequencies.end(); ++iter)
+    w += iter->second*iter->second;
+  lambda = p*(n2 - w)/((nb_samples-1)*(w*p - n2));
+  if(lambda >= 1)
+    return -log(1.0/p);
+  else {
+    beta = (lambda/(1-lambda))*nb_samples/frequencies.size();
+    return entropy_dirichlet(frequencies, nb_samples, beta);
+  }
+}
+
+double entropy(const int *d, int nsamples, int nvars, int c, bool *v) {
+  // H(d) using estimator c
+  std::map< std::vector<int> ,int > freq;
+  std::vector<int> sel;
+  bool ok = true;
+  int nsamples_ok = 0;
+  double H = 0;
+  for(int s = 0; s < nsamples; ++s) {
+    ok = true;
+    sel.clear();
+    for(int i = 0; i < nvars; ++i) {
+      if(v[i]){
+        if(d[s+i*nsamples]!=NA_INTEGER)
+          sel.push_back(d[s+i*nsamples]);
+        else
+          ok = false;
+      }
+    }
+    if(ok) {
+      freq[sel]++;
+      nsamples_ok++;
+    }
+  }
+  if( c == 0 ) //empirical
+    H = entropy_empirical(freq,nsamples_ok);
+  else if( c == 1 ) //miller-madow
+    H = entropy_miller_madow(freq,nsamples_ok);
+  else if( c == 2 ) //dirichlet Schurmann-Grassberger
+    H = entropy_dirichlet(freq,nsamples_ok, 1/freq.size());
+  else if( c == 3 ) // shrink
+    H = entropy_shrink(freq,nsamples_ok);
+  return H;
+}
+
+double mut_info(const IntegerVector& x, const IntegerVector& y, const int& method) {
+  if (x.length() != y.length()) {
+    stop("length(x) does not match length(y)");
+  }
+  bool v = true;
+  double entropy_x = entropy(x.begin(), x.length(), 1, method, &v);
+  double entropy_y = entropy(y.begin(), y.length(), 1, method, &v);
+  IntegerVector xy = RcppColMetric::utils::concat_vec<INTSXP, int>(x, y);
+  double entropy_xy = entropy(xy.begin(), x.length(), 2, method, &v);
+  return entropy_x + entropy_y - entropy_xy;
+}
+
+class MutInfoMetric: public RcppColMetric::Metric<INTSXP, INTSXP>
+{
+public:
+  int method;
+  MutInfoMetric(const RObject& x, const IntegerVector& y, const int& method_, const Nullable<List>& args = R_NilValue): method(method_) {
+    output_dim = 1;
+  }
+  virtual Nullable<CharacterVector> row_names(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) const override {
+    return R_NilValue;
+  }
+  virtual NumericVector calc_col(const IntegerVector& x, const IntegerVector& y, const R_xlen_t& i, const Nullable<List>& args = R_NilValue) const override {
+    double res = mut_info(x, y, method);
+    NumericVector out(output_dim, res);
+    return out;
+  }
+};
+
+//' Column-wise mutual information
+//'
+//' Calculate mutual information for every column of a matrix or data frame. Only discrete values are allowed.
+//' For better performance, data frame is preferred.
+//'
+//' @param x Matrix or data frame of discrete values (integers). Rows contain samples and columns contain features/variables.
+//' @param y Factor of class labels for the data samples. A response vector with one label for each row/component of \code{x}.
+//' @param args \code{NULL} (default) or list of named arguments: \describe{
+//' \item{method}{Integer indicating computation method: 0 = empirical, 1 = Miller-Madow,
+//' 2 = shrink, 3 = Schurmann-Grassberger.}
+//' }
+//'
+//' @return An output is a single matrix with the same number of columns as X and 1 row.
+//'
+//' @note Change log:
+//' \itemize{
+//'   \item{0.1.0 Xiurui Zhu - Initiate the function.}
+//' }
+//'
+//' @export
+//' @seealso \code{infotheo::mutinformation()} for the original computation
+//' of mutual information in \R (and also the computation methods).
+//' @example man-roxygen/ex-col_mut_info.R
+// [[Rcpp::export]]
+NumericMatrix col_mut_info(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
+  int method = 0;
+  if (args.isNotNull() == true) {
+    List args_ = as<List>(args);
+    if (RcppColMetric::utils::find_name(args_, "method") == true) {
+      method = args_["method"];
+    }
+  }
+  MutInfoMetric mut_info_metric(x, y, method, args);
+  NumericMatrix out = RcppColMetric::col_metric<INTSXP, INTSXP, REALSXP>(x, y, mut_info_metric, args);
+  return out;
+}
+
+// You can include R code blocks in C++ files processed with sourceCpp
+// (useful for testing and development). The R code will be automatically
+// run after the compilation.
+//
+
+/*** R
+library(MASS)
+library(magrittr)
+data(cats)
+microbenchmark::microbenchmark(
+  col_mut_info_r_mat = apply(as.matrix(round(cats[, 2L:3L])), 2L, infotheo::mutinformation, cats[, 1L]) %>%
+    {matrix(., nrow = 1L, dimnames = list(NULL, names(.)))},
+  col_mut_info_r_df = sapply(round(cats[, 2L:3L]), infotheo::mutinformation, cats[, 1L]) %>%
+    {matrix(., nrow = 1L, dimnames = list(NULL, names(.)))},
+  col_mut_info_cpp_mat = col_mut_info(as.matrix(round(cats[, 2L:3L])), cats[, 1L]),
+  col_mut_info_cpp_df = col_mut_info(round(cats[, 2L:3L]), cats[, 1L]),
+  times = 100L,
+  check = "identical"
+)
+*/
