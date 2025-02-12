@@ -4,6 +4,9 @@
 <url><loc>/LICENSE.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
+<url><loc>/reference/RcppColMetric-package.html</loc></url>
+<url><loc>/reference/col_auc.html</loc></url>
+<url><loc>/reference/col_mut_info.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
 </urlset>
 
