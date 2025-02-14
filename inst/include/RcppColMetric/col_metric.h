@@ -33,4 +33,24 @@ namespace RcppColMetric
     colnames(out) = utils::get_feature_names(x);
     return out;
   }
+
+  template <int T1, int T2, int T3>
+  inline List col_metric_vec(const List& x, const List& y, const List& metric, const Nullable<List>& args = R_NilValue) {
+    IntegerVector xy_len = {x.length(), y.length()};
+    R_xlen_t vec_len = max(xy_len);
+    List out(vec_len);
+    Nullable<List> args_single = R_NilValue;
+    for (R_xlen_t vec_i = 0; vec_i < vec_len; vec_i++) {
+      RObject x_single = GETV(x, vec_i);
+      Vector<T2> y_single = GETV(y, vec_i);
+      Metric<T1, T2> metric_single = GETV(metric, vec_i);
+      if (args.isNotNull()) {
+        List args_ = as<List>(args);
+        args_single = GETV(args_, vec_i);
+      }
+      Matrix<T3> out_single = col_metric(x_single, y_single, metric_single, args_single);
+      out(vec_i) = out_single;
+    }
+    return out;
+  }
 } // namespace: RcppColMetric
