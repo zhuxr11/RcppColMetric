@@ -153,13 +153,33 @@ public:
 //' }
 //'
 //' @export
-//' @seealso \code{caTools::colAUC()} for the original \R implementation.
+//' @seealso \code{caTools::colAUC} for the original \R implementation.
+//' @seealso \code{\link{col_auc_vec}} for the vectorized version.
 //' @example man-roxygen/ex-col_auc.R
 // [[Rcpp::export]]
 NumericMatrix col_auc(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
  AucMetric auc_metric(x, y, " vs. ", args);
  NumericMatrix out = RcppColMetric::col_metric<REALSXP, INTSXP, REALSXP>(x, y, auc_metric, args);
  return out;
+}
+
+AucMetric gen_auc_metric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
+  AucMetric out(x, y, " vs. ", args);
+  return out;
+}
+
+//' @templateVar fun_name col_auc
+//' @template template-vec_function
+//'
+//' @note Change log:
+//' \itemize{
+//'   \item{0.1.0 Xiurui Zhu - Initiate the function.}
+//' }
+//' @example man-roxygen/ex-col_auc_vec.R
+// [[Rcpp::export]]
+List col_auc_vec(const List& x, const List& y, const Nullable<List>& args = R_NilValue) {
+  List out = RcppColMetric::col_metric_vec<REALSXP, INTSXP, REALSXP>(x, y, &gen_auc_metric, args);
+  return out;
 }
 
 // You can include R code blocks in C++ files processed with sourceCpp

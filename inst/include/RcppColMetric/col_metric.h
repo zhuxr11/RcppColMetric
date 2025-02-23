@@ -2,6 +2,9 @@
 #include "utils.h"
 using namespace Rcpp;
 
+#ifndef RCPP_COLMETRIC_H_GEN_
+#define RCPP_COLMETRIC_H_GEN_
+
 namespace RcppColMetric
 {
   template <int T1, int T2>
@@ -34,23 +37,25 @@ namespace RcppColMetric
     return out;
   }
 
-  template <int T1, int T2, int T3>
-  inline List col_metric_vec(const List& x, const List& y, const List& metric, const Nullable<List>& args = R_NilValue) {
-    IntegerVector xy_len = {x.length(), y.length()};
-    R_xlen_t vec_len = max(xy_len);
+  template <int T1, int T2, int T3, typename T4>
+  inline List col_metric_vec(
+      const List& x,
+      const List& y,
+      T4 (*f)(const RObject&, const Vector<T2>&, const Nullable<List>&),
+      const Nullable<List>& args = R_NilValue
+  ) {
+    R_xlen_t vec_len = utils::get_max_len(x.length(), y.length());
     List out(vec_len);
-    Nullable<List> args_single = R_NilValue;
     for (R_xlen_t vec_i = 0; vec_i < vec_len; vec_i++) {
       RObject x_single = GETV(x, vec_i);
       Vector<T2> y_single = GETV(y, vec_i);
-      Metric<T1, T2> metric_single = GETV(metric, vec_i);
-      if (args.isNotNull()) {
-        List args_ = as<List>(args);
-        args_single = GETV(args_, vec_i);
-      }
-      Matrix<T3> out_single = col_metric(x_single, y_single, metric_single, args_single);
+      Nullable<List> args_single = RcppColMetric::utils::get_args_single(args, vec_i);
+      T4 metric_single = f(x_single, y_single, args_single);
+      Matrix<T3> out_single = col_metric<T1, T2, T3>(x_single, y_single, metric_single, args_single);
       out(vec_i) = out_single;
     }
     return out;
   }
 } // namespace: RcppColMetric
+
+#endif // RCPP_COLMETRIC_H_GEN_

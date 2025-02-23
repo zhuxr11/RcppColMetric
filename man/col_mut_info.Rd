@@ -43,6 +43,8 @@ if (require("MASS", quietly = TRUE) == TRUE) {
 }
 }
 \seealso{
-\code{infotheo::mutinformation()} for the original computation
+\code{infotheo::mutinformation} for the original computation
 of mutual information in \R (and also the computation methods).
+
+\code{\link{col_mut_info_vec}} for the vectorized version.
 }

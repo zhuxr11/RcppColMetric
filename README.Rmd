@@ -19,40 +19,209 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/RcppColMetric)](https://CRAN.R-project.org/package=RcppColMetric)
 [![R-CMD-check](https://github.com/zhuxr11/RcppColMetric/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/zhuxr11/RcppColMetric/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/zhuxr11/RcppColMetric/graph/badge.svg)](https://app.codecov.io/gh/zhuxr11/RcppColMetric)
+[![Download stats](https://cranlogs.r-pkg.org/badges/grand-total/RcppColMetric)](https://CRAN.R-project.org/package=RcppColMetric)
 <!-- badges: end -->
 
-The goal of RcppColMetric is to ...
+**Package**: [*RcppColMetric*](https://github.com/zhuxr11/RcppColMetric) `r pkgload::pkg_version()`<br />
+**Author**: Xiurui Zhu<br />
+**Modified**: `r file.info("README.Rmd")$mtime`<br />
+**Compiled**: `r Sys.time()`
+
+The goal of `RcppColMetric` is to efficiently compute metrics between various vectors and a common vector. This is common in data science, such as computing performance metrics between each feature and a common response. [`Rcpp`](https://CRAN.R-project.org/package=Rcpp) is used to efficiently iterate over vectors through compiled code. You may extend its utilities by providing custom metrics that fit into the framework.
 
 ## Installation
 
-You can install the development version of RcppColMetric like so:
+You can install the released version of `RcppColMetric` from [CRAN](https://cran.r-project.org/) with:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+install.packages("RcppColMetric")
 ```
 
-## Example
+Alternatively, you can install the developmental version of `RcppColMetric` from [github](https://github.com/) with:
 
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-library(RcppColMetric)
-## basic example code
+``` r
+remotes::install_github("zhuxr11/RcppColMetric")
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+## Examples
 
-```{r cars}
-summary(cars)
+```{r library, eval=FALSE}
+library(cbbinom)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
+```{r, include=FALSE}
+pkgload::load_all()
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+We use `cats` from [`MASS`](https://CRAN.R-project.org/package=MASS) to illustrate the use of the package.
+
+```{r cats-dataset}
+library(MASS)
+data(cats)
+print(head(cats))
+```
+
+### Column-wise ROC-AUC
+
+In binary classification modelling, it is a common practice to compute ROC-AUC of each feature (usually columns) against a common target. `RcppColMetric` provides a much faster version than its commonly used counterparts, e.g. `caTools::colAUC()`.
+
+```{r col-auc}
+library(caTools)
+(col_auc_bench <- microbenchmark::microbenchmark(
+  col_auc_r = caTools::colAUC(cats[, 2L:3L], cats[, 1L]),
+  col_auc_cpp = col_auc(cats[, 2L:3L], cats[, 1L]),
+  times = 100L,
+  check = "identical"
+))
+```
+
+As can be seen, the median speed of computation from `RcppColMetric` is `r round(summary(col_auc_bench)[["median"]][1L] / summary(col_auc_bench)[["median"]][2L], 3L)` times faster.
+
+If there are multiple sets of features and responses, you may use the vectorized version `col_auc_vec()`, which uses compiled code to speed up iterations and returns a list.
+
+```{r col-auc-vec}
+col_auc_vec(list(cats[, 2L:3L]), list(cats[, 1L]))
+```
+
+### Column-wize mutual information
+
+In classification modelling, it is another common practice to assess mutual information between features and a response if the features are discrete. `RcppColMetric` provides a much faster version than its commonly used counterparts, e.g. `infotheo::mutinformation()`.
+
+```{r col-mut-info}
+library(infotheo)
+(col_mut_info_bench <- microbenchmark::microbenchmark(
+  col_mut_info_r = sapply(round(cats[, 2L:3L]), infotheo::mutinformation, cats[, 1L]) %>%
+    {matrix(., nrow = 1L, dimnames = list(NULL, names(.)))},
+  col_mut_info_cpp = col_mut_info(round(cats[, 2L:3L]), cats[, 1L]),
+  times = 100L,
+  check = "identical"
+))
+```
+
+As can be seen, the median speed of computation from `RcppColMetric` is `r round(summary(col_mut_info_bench)[["median"]][1L] / summary(col_mut_info_bench)[["median"]][2L], 3L)` times faster.
+
+If there are multiple sets of features and responses, you may use the vectorized version `col_mut_info_vec()`, which uses compiled code to speed up iterations and returns a list.
+
+```{r col-mut-info-vec}
+col_mut_info_vec(list(round(cats[, 2L:3L])), list(cats[, 1L]))
+```
+
+## Extend the package with custom metric
+
+You may implement your own metric by inheriting from `RcppColMetric::Metric` class with template arguments as feature `SEXP` (input, numeric here) and response `SEXP` (input, factor as integer here) types. For example, to compute range of each feature, define a `RangeMetric` class.
+
+```{Rcpp, include=FALSE}
+#include "E:/R/Packages/RcppColMetric/inst/include/RcppColMetric.h"
+#include <Rcpp.h>
+using namespace Rcpp;
+
+class 
+RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP>
+{
+public:
+  // Constructor
+  RangeMetric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
+  // This parameter is inherited from `Metric`, determining output dimension (number of rows)
+  // For RangeMetric, the output dimension is 1 (scalar)
+  output_dim = 1;
+}
+  
+  virtual Nullable<CharacterVector> row_names(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) const override {
+    // Determine the row names
+    // For RangeMetric, the row names are NULL (or this can be CharacterVector)
+    return R_NilValue;
+  }
+  virtual NumericVector calc_col(const NumericVector& x, const IntegerVector& y, const R_xlen_t& i, const Nullable<List>& args = R_NilValue) const override {
+    // Derive output value for each feature and the common response
+    // For RangeMetric, the output is max - min
+    NumericVector out = {max(x) - min(x)};
+    return out;
+  }
+};
+
+// [[Rcpp::export]]
+NumericMatrix col_range(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
+  RangeMetric range_metric(x, y, args);
+  NumericMatrix out = RcppColMetric::col_metric<REALSXP, INTSXP, REALSXP>(x, y, range_metric, args);
+  return out;
+}
+
+RangeMetric gen_range_metric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
+  RangeMetric out(x, y, args);
+  return out;
+}
+
+// [[Rcpp::export]]
+List col_range_vec(const List& x, const List& y, const Nullable<List>& args = R_NilValue) {
+  List out = RcppColMetric::col_metric_vec<REALSXP, INTSXP, REALSXP>(x, y, &gen_range_metric, args);
+  return out;
+}
+```
+
+```{Rcpp range-metric, eval=FALSE}
+#include <RcppColMetric.h>
+#include <Rcpp.h>
+using namespace Rcpp;
+
+class 
+RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP>
+{
+public:
+  // Constructor
+  RangeMetric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
+  // This parameter is inherited from `Metric`, determining output dimension (number of rows)
+  // For RangeMetric, the output dimension is 1 (scalar)
+  output_dim = 1;
+}
+  
+  virtual Nullable<CharacterVector> row_names(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) const override {
+    // Determine the row names
+    // For RangeMetric, the row names are NULL (or this can be CharacterVector)
+    return R_NilValue;
+  }
+  virtual NumericVector calc_col(const NumericVector& x, const IntegerVector& y, const R_xlen_t& i, const Nullable<List>& args = R_NilValue) const override {
+    // Derive output value for each feature and the common response
+    // For RangeMetric, the output is max - min
+    NumericVector out = {max(x) - min(x)};
+    return out;
+  }
+};
+```
+
+Then, define the main function calling `RcppColMetric::col_metric()`, with corresponding feature `SEXP` (input, numeric here), response `SEXP` (input, factor as integer here) and output `SEXP` (output, numeric here) types.
+
+```{Rcpp col-range, eval=FALSE}
+NumericMatrix col_range(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
+  RangeMetric range_metric(x, y, args);
+  NumericMatrix out = RcppColMetric::col_metric<REALSXP, INTSXP, REALSXP>(x, y, range_metric, args);
+  return out;
+}
+```
+
+Test this function with `cats`:
+
+```{r col-range-example}
+col_range(cats[, 2L:3L], cats[, 1L])
+```
+
+To define vectorized version of the function, a wrapper function is defined to generate `RangeMetric` object, and then passed on to the workhorse `RcppColMetric::col_metric_vec()`.
+
+```{Rcpp col-range-vec, eval=FALSE}
+RangeMetric gen_range_metric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
+  RangeMetric out(x, y, args);
+  return out;
+}
+
+// [[Rcpp::export]]
+List col_range_vec(const List& x, const List& y, const Nullable<List>& args = R_NilValue) {
+  List out = RcppColMetric::col_metric_vec<REALSXP, INTSXP, REALSXP>(x, y, &gen_range_metric, args);
+  return out;
+}
+```
+
+Test the vectorized function with `cats`:
+
+```{r col-range-vec-example}
+col_range_vec(list(cats[, 2L:3L]), list(cats[, 1L]))
+```
+

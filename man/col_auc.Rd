@@ -43,5 +43,7 @@ if (require("MASS", quietly = TRUE) == TRUE) {
 }
 }
 \seealso{
-\code{caTools::colAUC()} for the original \R implementation.
+\code{caTools::colAUC} for the original \R implementation.
+
+\code{\link{col_auc_vec}} for the vectorized version.
 }

@@ -21,11 +21,24 @@
 #' }
 #'
 #' @export
-#' @seealso \code{infotheo::mutinformation()} for the original computation
+#' @seealso \code{infotheo::mutinformation} for the original computation
 #' of mutual information in \R (and also the computation methods).
+#' @seealso \code{\link{col_mut_info_vec}} for the vectorized version.
 #' @example man-roxygen/ex-col_mut_info.R
 col_mut_info <- function(x, y, args = NULL) {
     .Call(`_RcppColMetric_col_mut_info`, x, y, args)
+}
+
+#' @templateVar fun_name col_mut_info
+#' @template template-vec_function
+#'
+#' @note Change log:
+#' \itemize{
+#'   \item{0.1.0 Xiurui Zhu - Initiate the function.}
+#' }
+#' @example man-roxygen/ex-col_mut_info_vec.R
+col_mut_info_vec <- function(x, y, args = NULL) {
+    .Call(`_RcppColMetric_col_mut_info_vec`, x, y, args)
 }
 
 #' Column-wise area under ROC curve (AUC)
@@ -50,9 +63,22 @@ col_mut_info <- function(x, y, args = NULL) {
 #' }
 #'
 #' @export
-#' @seealso \code{caTools::colAUC()} for the original \R implementation.
+#' @seealso \code{caTools::colAUC} for the original \R implementation.
+#' @seealso \code{\link{col_auc_vec}} for the vectorized version.
 #' @example man-roxygen/ex-col_auc.R
 col_auc <- function(x, y, args = NULL) {
     .Call(`_RcppColMetric_col_auc`, x, y, args)
+}
+
+#' @templateVar fun_name col_auc
+#' @template template-vec_function
+#'
+#' @note Change log:
+#' \itemize{
+#'   \item{0.1.0 Xiurui Zhu - Initiate the function.}
+#' }
+#' @example man-roxygen/ex-col_auc_vec.R
+col_auc_vec <- function(x, y, args = NULL) {
+    .Call(`_RcppColMetric_col_auc_vec`, x, y, args)
 }
 

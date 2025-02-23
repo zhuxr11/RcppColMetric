@@ -24,6 +24,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// col_mut_info_vec
+List col_mut_info_vec(const List& x, const List& y, const Nullable<List>& args);
+RcppExport SEXP _RcppColMetric_col_mut_info_vec(SEXP xSEXP, SEXP ySEXP, SEXP argsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const Nullable<List>& >::type args(argsSEXP);
+    rcpp_result_gen = Rcpp::wrap(col_mut_info_vec(x, y, args));
+    return rcpp_result_gen;
+END_RCPP
+}
 // col_auc
 NumericMatrix col_auc(const RObject& x, const IntegerVector& y, const Nullable<List>& args);
 RcppExport SEXP _RcppColMetric_col_auc(SEXP xSEXP, SEXP ySEXP, SEXP argsSEXP) {
@@ -37,10 +50,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// col_auc_vec
+List col_auc_vec(const List& x, const List& y, const Nullable<List>& args);
+RcppExport SEXP _RcppColMetric_col_auc_vec(SEXP xSEXP, SEXP ySEXP, SEXP argsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const List& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const Nullable<List>& >::type args(argsSEXP);
+    rcpp_result_gen = Rcpp::wrap(col_auc_vec(x, y, args));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppColMetric_col_mut_info", (DL_FUNC) &_RcppColMetric_col_mut_info, 3},
+    {"_RcppColMetric_col_mut_info_vec", (DL_FUNC) &_RcppColMetric_col_mut_info_vec, 3},
     {"_RcppColMetric_col_auc", (DL_FUNC) &_RcppColMetric_col_auc, 3},
+    {"_RcppColMetric_col_auc_vec", (DL_FUNC) &_RcppColMetric_col_auc_vec, 3},
     {NULL, NULL, 0}
 };
 

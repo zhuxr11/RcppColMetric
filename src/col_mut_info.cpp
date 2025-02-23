@@ -119,8 +119,9 @@ public:
 //' }
 //'
 //' @export
-//' @seealso \code{infotheo::mutinformation()} for the original computation
+//' @seealso \code{infotheo::mutinformation} for the original computation
 //' of mutual information in \R (and also the computation methods).
+//' @seealso \code{\link{col_mut_info_vec}} for the vectorized version.
 //' @example man-roxygen/ex-col_mut_info.R
 // [[Rcpp::export]]
 NumericMatrix col_mut_info(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
@@ -133,6 +134,32 @@ NumericMatrix col_mut_info(const RObject& x, const IntegerVector& y, const Nulla
   }
   MutInfoMetric mut_info_metric(x, y, method, args);
   NumericMatrix out = RcppColMetric::col_metric<INTSXP, INTSXP, REALSXP>(x, y, mut_info_metric, args);
+  return out;
+}
+
+MutInfoMetric gen_mut_info_metric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
+  int method = 0;
+  if (args.isNotNull() == true) {
+    List args_ = as<List>(args);
+    if (RcppColMetric::utils::find_name(args_, "method") == true) {
+      method = args_["method"];
+    }
+  }
+  MutInfoMetric out(x, y, method, args);
+  return out;
+}
+
+//' @templateVar fun_name col_mut_info
+//' @template template-vec_function
+//'
+//' @note Change log:
+//' \itemize{
+//'   \item{0.1.0 Xiurui Zhu - Initiate the function.}
+//' }
+//' @example man-roxygen/ex-col_mut_info_vec.R
+// [[Rcpp::export]]
+List col_mut_info_vec(const List& x, const List& y, const Nullable<List>& args = R_NilValue) {
+  List out = RcppColMetric::col_metric_vec<INTSXP, INTSXP, REALSXP>(x, y, &gen_mut_info_metric, args);
   return out;
 }
 

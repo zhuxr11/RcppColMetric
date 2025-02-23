@@ -1,10 +1,13 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-#ifndef COLMETRIC_MACROS
-#define COLMETRIC_MACROS
+#ifndef RCPP_COLMETRIC_MACROS
+#define RCPP_COLMETRIC_MACROS
 #define GETV(x, i) x(i % x.length()) // wrapped indexing of vector
-#endif //COLMETRIC_MACROS
+#endif // RCPP_COLMETRIC_MACROS
+
+#ifndef RCPP_COLMETRIC_UTILS_H_GEN_
+#define RCPP_COLMETRIC_UTILS_H_GEN_
 
 namespace RcppColMetric
 {
@@ -67,5 +70,24 @@ namespace RcppColMetric
       }
       return false;
     }
+
+    inline R_xlen_t get_max_len(const R_xlen_t& x, const R_xlen_t& y) {
+      if (x >= y) {
+        return x;
+      } else {
+        return y;
+      }
+    }
+
+    inline Nullable<List> get_args_single(const Nullable<List>& args, const R_xlen_t& i) {
+      if (args.isNull() == true) {
+        return R_NilValue;
+      }
+      List args_ = as<List>(args);
+      List out = GETV(args_, i);
+      return out;
+    }
   } // namespace: utils
 } // namespace: RcppColMetric
+
+#endif // RCPP_COLMETRIC_UTILS_H_GEN_
