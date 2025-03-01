@@ -15,8 +15,8 @@ stats](https://cranlogs.r-pkg.org/badges/grand-total/RcppColMetric)](https://CRA
 <!-- badges: end -->
 
 **Package**: [*RcppColMetric*](https://github.com/zhuxr11/RcppColMetric)
-0.0.0.9000<br /> **Author**: Xiurui Zhu<br /> **Modified**: 2025-02-23
-23:42:38<br /> **Compiled**: 2025-02-23 23:42:44
+0.0.0.9000<br /> **Author**: Xiurui Zhu<br /> **Modified**: 2025-03-02
+15:50:36<br /> **Compiled**: 2025-03-02 15:50:41
 
 The goal of `RcppColMetric` is to efficiently compute metrics between
 various vectors and a common vector. This is common in data science,
@@ -80,12 +80,12 @@ library(caTools)
 ))
 #> Unit: microseconds
 #>         expr   min     lq    mean median     uq    max neval
-#>    col_auc_r 521.1 552.55 642.628 627.00 662.85 1652.5   100
-#>  col_auc_cpp 124.2 143.90 160.937 155.15 174.85  277.9   100
+#>    col_auc_r 524.0 575.05 638.020 632.25 666.55 1078.6   100
+#>  col_auc_cpp 123.1 142.95 158.175 153.70 170.85  234.7   100
 ```
 
 As can be seen, the median speed of computation from `RcppColMetric` is
-4.041 times faster.
+4.114 times faster.
 
 If there are multiple sets of features and responses, you may use the
 vectorized version `col_auc_vec()`, which uses compiled code to speed up
@@ -115,13 +115,13 @@ library(infotheo)
   check = "identical"
 ))
 #> Unit: microseconds
-#>              expr    min     lq     mean median      uq    max neval
-#>    col_mut_info_r 1591.0 1663.9 1981.595 1834.8 2013.35 4766.4   100
-#>  col_mut_info_cpp  359.7  383.4  441.104  416.0  457.85 1023.6   100
+#>              expr    min      lq     mean median      uq    max neval
+#>    col_mut_info_r 1544.0 1662.10 1910.550 1818.1 1960.25 6326.9   100
+#>  col_mut_info_cpp  354.6  378.25  414.082  402.1  442.05  565.7   100
 ```
 
 As can be seen, the median speed of computation from `RcppColMetric` is
-4.411 times faster.
+4.522 times faster.
 
 If there are multiple sets of features and responses, you may use the
 vectorized version `col_mut_info_vec()`, which uses compiled code to
@@ -153,20 +153,20 @@ RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP>
 public:
   // Constructor
   RangeMetric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
-  // This parameter is inherited from `Metric`, determining output dimension (number of rows)
-  // For RangeMetric, the output dimension is 1 (scalar)
-  output_dim = 1;
-}
-  
+    // This parameter is inherited from `Metric`, determining output dimension (number of rows)
+    // For RangeMetric, the output dimension is 2 (min & max)
+    output_dim = 2;
+  }
   virtual Nullable<CharacterVector> row_names(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) const override {
     // Determine the row names
-    // For RangeMetric, the row names are NULL (or this can be CharacterVector)
-    return R_NilValue;
+    // If not used, it may return R_NilValue
+    CharacterVector out = {"min", "max"};
+    return out;
   }
   virtual NumericVector calc_col(const NumericVector& x, const IntegerVector& y, const R_xlen_t& i, const Nullable<List>& args = R_NilValue) const override {
     // Derive output value for each feature and the common response
-    // For RangeMetric, the output is max - min
-    NumericVector out = {max(x) - min(x)};
+    // For RangeMetric, the output is min & max
+    NumericVector out = {min(x), max(x)};
     return out;
   }
 };
@@ -189,13 +189,15 @@ Test this function with `cats`:
 
 ``` r
 col_range(cats[, 2L:3L], cats[, 1L])
-#>      Bwt  Hwt
-#> [1,] 1.9 14.2
+#>     Bwt  Hwt
+#> min 2.0  6.3
+#> max 3.9 20.5
 ```
 
 To define vectorized version of the function, a wrapper function is
-defined to generate `RangeMetric` object, and then passed on to the
-workhorse `RcppColMetric::col_metric_vec()`.
+defined to generate `RangeMetric` object (taking only `x`, `y` and
+`args`), and then passed on to the workhorse
+`RcppColMetric::col_metric_vec()`.
 
 ``` cpp
 RangeMetric gen_range_metric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
@@ -215,6 +217,7 @@ Test the vectorized function with `cats`:
 ``` r
 col_range_vec(list(cats[, 2L:3L]), list(cats[, 1L]))
 #> [[1]]
-#>      Bwt  Hwt
-#> [1,] 1.9 14.2
+#>     Bwt  Hwt
+#> min 2.0  6.3
+#> max 3.9 20.5
 ```

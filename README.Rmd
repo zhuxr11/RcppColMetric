@@ -121,20 +121,20 @@ RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP>
 public:
   // Constructor
   RangeMetric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
-  // This parameter is inherited from `Metric`, determining output dimension (number of rows)
-  // For RangeMetric, the output dimension is 1 (scalar)
-  output_dim = 1;
-}
-  
+    // This parameter is inherited from `Metric`, determining output dimension (number of rows)
+    // For RangeMetric, the output dimension is 2 (min & max)
+    output_dim = 2;
+  }
   virtual Nullable<CharacterVector> row_names(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) const override {
     // Determine the row names
-    // For RangeMetric, the row names are NULL (or this can be CharacterVector)
-    return R_NilValue;
+    // If not used, it may return R_NilValue
+    CharacterVector out = {"min", "max"};
+    return out;
   }
   virtual NumericVector calc_col(const NumericVector& x, const IntegerVector& y, const R_xlen_t& i, const Nullable<List>& args = R_NilValue) const override {
     // Derive output value for each feature and the common response
-    // For RangeMetric, the output is max - min
-    NumericVector out = {max(x) - min(x)};
+    // For RangeMetric, the output is min & max
+    NumericVector out = {min(x), max(x)};
     return out;
   }
 };
@@ -169,20 +169,20 @@ RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP>
 public:
   // Constructor
   RangeMetric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
-  // This parameter is inherited from `Metric`, determining output dimension (number of rows)
-  // For RangeMetric, the output dimension is 1 (scalar)
-  output_dim = 1;
-}
-  
+    // This parameter is inherited from `Metric`, determining output dimension (number of rows)
+    // For RangeMetric, the output dimension is 2 (min & max)
+    output_dim = 2;
+  }
   virtual Nullable<CharacterVector> row_names(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) const override {
     // Determine the row names
-    // For RangeMetric, the row names are NULL (or this can be CharacterVector)
-    return R_NilValue;
+    // If not used, it may return R_NilValue
+    CharacterVector out = {"min", "max"};
+    return out;
   }
   virtual NumericVector calc_col(const NumericVector& x, const IntegerVector& y, const R_xlen_t& i, const Nullable<List>& args = R_NilValue) const override {
     // Derive output value for each feature and the common response
-    // For RangeMetric, the output is max - min
-    NumericVector out = {max(x) - min(x)};
+    // For RangeMetric, the output is min & max
+    NumericVector out = {min(x), max(x)};
     return out;
   }
 };
@@ -204,7 +204,7 @@ Test this function with `cats`:
 col_range(cats[, 2L:3L], cats[, 1L])
 ```
 
-To define vectorized version of the function, a wrapper function is defined to generate `RangeMetric` object, and then passed on to the workhorse `RcppColMetric::col_metric_vec()`.
+To define vectorized version of the function, a wrapper function is defined to generate `RangeMetric` object (taking only `x`, `y` and `args`), and then passed on to the workhorse `RcppColMetric::col_metric_vec()`.
 
 ```{Rcpp col-range-vec, eval=FALSE}
 RangeMetric gen_range_metric(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) {
