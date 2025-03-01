@@ -30,7 +30,12 @@ namespace RcppColMetric
     Matrix<T3> out(metric.output_dim, n_feature);
     for (R_xlen_t feature_i = 0; feature_i < n_feature; feature_i++) {
       Vector<T1> feature_val = utils::slice_feature<T1>(x, feature_i);
-      out(_, feature_i) = metric.calc_col(feature_val, y, feature_i, args);
+      Vector<T3> out_vec = metric.calc_col(feature_val, y, feature_i, args);
+      if (out_vec.length() != metric.output_dim) {
+        stop("Length of vector from metric.calc_col() [%i] differs from metric.output_dim [%i]",
+             out_vec.length(), metric.output_dim);
+      }
+      out(_, feature_i) = out_vec;
     }
     rownames(out) = metric.row_names(x, y, args);
     colnames(out) = utils::get_feature_names(x);
