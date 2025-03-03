@@ -82,7 +82,7 @@ double mut_info(const IntegerVector& x, const IntegerVector& y, const int& metho
   return entropy_x + entropy_y - entropy_xy;
 }
 
-class MutInfoMetric: public RcppColMetric::Metric<INTSXP, INTSXP>
+class MutInfoMetric: public RcppColMetric::Metric<INTSXP, INTSXP, REALSXP>
 {
 public:
   int method;
@@ -156,6 +156,8 @@ MutInfoMetric gen_mut_info_metric(const RObject& x, const IntegerVector& y, cons
 //' \itemize{
 //'   \item{0.1.0 Xiurui Zhu - Initiate the function.}
 //' }
+//'
+//' @export
 //' @example man-roxygen/ex-col_mut_info_vec.R
 // [[Rcpp::export]]
 List col_mut_info_vec(const List& x, const List& y, const Nullable<List>& args = R_NilValue) {

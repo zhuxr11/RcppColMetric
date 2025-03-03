@@ -115,8 +115,9 @@ You may implement your own metric by inheriting from `RcppColMetric::Metric` cla
 #include <Rcpp.h>
 using namespace Rcpp;
 
+// x: numeric (REALSXP), y: factor -> integer (INTSXP), output: numeric (REALSXP)
 class 
-RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP>
+RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP, REALSXP>
 {
 public:
   // Constructor
@@ -163,8 +164,10 @@ List col_range_vec(const List& x, const List& y, const Nullable<List>& args = R_
 #include <Rcpp.h>
 using namespace Rcpp;
 
+
+// x: numeric (REALSXP), y: factor -> integer (INTSXP), output: numeric (REALSXP)
 class 
-RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP>
+RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP, REALSXP>
 {
 public:
   // Constructor

@@ -15,8 +15,8 @@ stats](https://cranlogs.r-pkg.org/badges/grand-total/RcppColMetric)](https://CRA
 <!-- badges: end -->
 
 **Package**: [*RcppColMetric*](https://github.com/zhuxr11/RcppColMetric)
-0.0.0.9000<br /> **Author**: Xiurui Zhu<br /> **Modified**: 2025-03-02
-15:50:36<br /> **Compiled**: 2025-03-02 15:50:41
+0.0.0.9000<br /> **Author**: Xiurui Zhu<br /> **Modified**: 2025-03-03
+18:11:42<br /> **Compiled**: 2025-03-03 18:11:49
 
 The goal of `RcppColMetric` is to efficiently compute metrics between
 various vectors and a common vector. This is common in data science,
@@ -79,13 +79,13 @@ library(caTools)
   check = "identical"
 ))
 #> Unit: microseconds
-#>         expr   min     lq    mean median     uq    max neval
-#>    col_auc_r 524.0 575.05 638.020 632.25 666.55 1078.6   100
-#>  col_auc_cpp 123.1 142.95 158.175 153.70 170.85  234.7   100
+#>         expr   min     lq   mean median    uq    max neval
+#>    col_auc_r 523.0 554.85 620.06  621.7 653.9 1031.3   100
+#>  col_auc_cpp 128.3 147.30 165.06  161.3 175.1  287.0   100
 ```
 
 As can be seen, the median speed of computation from `RcppColMetric` is
-4.114 times faster.
+3.854 times faster.
 
 If there are multiple sets of features and responses, you may use the
 vectorized version `col_auc_vec()`, which uses compiled code to speed up
@@ -115,13 +115,13 @@ library(infotheo)
   check = "identical"
 ))
 #> Unit: microseconds
-#>              expr    min      lq     mean median      uq    max neval
-#>    col_mut_info_r 1544.0 1662.10 1910.550 1818.1 1960.25 6326.9   100
-#>  col_mut_info_cpp  354.6  378.25  414.082  402.1  442.05  565.7   100
+#>              expr    min      lq     mean  median      uq     max neval
+#>    col_mut_info_r 1638.4 1737.05 2057.062 1856.95 1966.75 13168.5   100
+#>  col_mut_info_cpp  361.1  389.25  449.926  422.55  474.70  1190.1   100
 ```
 
 As can be seen, the median speed of computation from `RcppColMetric` is
-4.522 times faster.
+4.395 times faster.
 
 If there are multiple sets of features and responses, you may use the
 vectorized version `col_mut_info_vec()`, which uses compiled code to
@@ -147,8 +147,10 @@ here) types. For example, to compute range of each feature, define a
 #include <Rcpp.h>
 using namespace Rcpp;
 
+
+// x: numeric (REALSXP), y: factor -> integer (INTSXP), output: numeric (REALSXP)
 class 
-RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP>
+RangeMetric: public RcppColMetric::Metric<REALSXP, INTSXP, REALSXP>
 {
 public:
   // Constructor

@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 namespace RcppColMetric
 {
-  template <int T1, int T2>
+  template <int T1, int T2, int T3>
   class Metric
   {
   public:
@@ -15,12 +15,12 @@ namespace RcppColMetric
     virtual Nullable<CharacterVector> row_names(const RObject& x, const Vector<T2>& y, const Nullable<List>& args = R_NilValue) const {
       return R_NilValue;
     };
-    virtual NumericVector calc_col(const Vector<T1>& x, const Vector<T2>& y, const R_xlen_t& i, const Nullable<List>& args = R_NilValue) const = 0;
+    virtual Vector<T3> calc_col(const Vector<T1>& x, const Vector<T2>& y, const R_xlen_t& i, const Nullable<List>& args = R_NilValue) const = 0;
     virtual ~Metric() {}
   };
 
   template <int T1, int T2, int T3>
-  inline Matrix<T3> col_metric(const RObject& x, const Vector<T2>& y, const Metric<T1, T2>& metric, const Nullable<List>& args = R_NilValue) {
+  inline Matrix<T3> col_metric(const RObject& x, const Vector<T2>& y, const Metric<T1, T2, T3>& metric, const Nullable<List>& args = R_NilValue) {
     R_xlen_t n_feature = utils::get_feature_count(x);
     R_xlen_t n_sample = utils::get_sample_count(x);
     if (n_sample != y.length()) {
@@ -31,11 +31,7 @@ namespace RcppColMetric
     for (R_xlen_t feature_i = 0; feature_i < n_feature; feature_i++) {
       Vector<T1> feature_val = utils::slice_feature<T1>(x, feature_i);
       Vector<T3> out_vec = metric.calc_col(feature_val, y, feature_i, args);
-      if (out_vec.length() != metric.output_dim) {
-        stop("Length of vector from metric.calc_col() [%i] differs from metric.output_dim [%i]",
-             out_vec.length(), metric.output_dim);
-      }
-      out(_, feature_i) = out_vec;
+      out(_, feature_i) = metric.calc_col(feature_val, y, feature_i, args);
     }
     rownames(out) = metric.row_names(x, y, args);
     colnames(out) = utils::get_feature_names(x);

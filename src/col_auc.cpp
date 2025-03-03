@@ -51,7 +51,7 @@ NumericVector avg_rank(const NumericVector& x)
   return r;
 }
 
-class AucMetric: public RcppColMetric::Metric<REALSXP, INTSXP>
+class AucMetric: public RcppColMetric::Metric<REALSXP, INTSXP, REALSXP>
 {
 public:
   CharacterVector y_level;
@@ -175,6 +175,8 @@ AucMetric gen_auc_metric(const RObject& x, const IntegerVector& y, const Nullabl
 //' \itemize{
 //'   \item{0.1.0 Xiurui Zhu - Initiate the function.}
 //' }
+//'
+//' @export
 //' @example man-roxygen/ex-col_auc_vec.R
 // [[Rcpp::export]]
 List col_auc_vec(const List& x, const List& y, const Nullable<List>& args = R_NilValue) {
