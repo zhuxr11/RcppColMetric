@@ -10,8 +10,36 @@ if (require(MASS, quietly = TRUE) == TRUE) {
           col_auc(cats[, 2L:3L], cats[, 1L]),
           caTools::colAUC(cats[, 2L:3L], cats[, 1L])
         )
+        # Error about x/y size mismatch
+        testthat::expect_error(
+          col_auc(cats[, 2L:3L], cats[1L:10L, 1L]),
+          "length\\(y\\) and nrow\\(X\\) must be the same"
+        )
+        # Error about insufficient label levels
+        testthat::expect_error(
+          col_auc(cats[, 2L:3L], as.factor(rep("F", nrow(cats)))),
+          "contain at least 2 class labels"
+        )
+        # Tests about directions
+        testthat::expect_no_error(
+          col_auc(cats[, 2L:3L], cats[, 1L], args = list(dirction = ">"))
+        )
+        testthat::expect_no_error(
+          col_auc(cats[, 2L:3L], cats[, 1L], args = list(dirction = "<"))
+        )
+        # Tests about non-existing levels
+        testthat::expect_no_error(
+          col_auc(cats[, 2L:3L], factor(cats[, 1L], levels = c("F", "M", "<NA>")))
+        )
+        # Tests about vectorized function
         testthat::expect_equal(
           col_auc_vec(list(cats[, 2L:3L]), list(cats[, 1L])),
+          list(caTools::colAUC(cats[, 2L:3L], cats[, 1L]))
+        )
+        testthat::expect_equal(
+          col_auc_vec(list(cats[, 2L:3L]),
+                      list(cats[, 1L]),
+                      args = list(list(direction = "auto"))),
           list(caTools::colAUC(cats[, 2L:3L], cats[, 1L]))
         )
       }
