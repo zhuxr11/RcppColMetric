@@ -21,15 +21,18 @@ if (require(MASS, quietly = TRUE) == TRUE) {
           "contain at least 2 class labels"
         )
         # Tests about directions
-        testthat::expect_no_error(
-          col_auc(cats[, 2L:3L], cats[, 1L], args = list(direction = ">"))
+        testthat::expect_error(
+          col_auc(cats[, 2L:3L], cats[, 1L], args = list(direction = ">")),
+          NA
         )
-        testthat::expect_no_error(
-          col_auc(cats[, 2L:3L], cats[, 1L], args = list(direction = "<"))
+        testthat::expect_error(
+          col_auc(cats[, 2L:3L], cats[, 1L], args = list(direction = "<")),
+          NA
         )
         # Tests about non-existing levels
-        testthat::expect_no_error(
-          col_auc(cats[, 2L:3L], factor(cats[, 1L], levels = c("F", "M", "<NA>")))
+        testthat::expect_error(
+          col_auc(cats[, 2L:3L], factor(cats[, 1L], levels = c("F", "M", "<NA>"))),
+          NA
         )
         # Tests about vectorized function
         testthat::expect_equal(
