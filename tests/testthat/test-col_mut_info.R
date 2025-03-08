@@ -36,6 +36,13 @@ if (require(MASS, quietly = TRUE) == TRUE) {
             {matrix(., nrow = 1L, dimnames = list(NULL, names(.)))} %>%
             list()
         )
+        # Tests about vectorized function with method selection
+        testthat::expect_equal(
+          col_mut_info_vec(list(round(cats[, 2L:3L])), list(cats[, 1L]), args = list(list(method = 2L - 1L))),
+          sapply(round(cats[, 2L:3L]), infotheo::mutinformation, cats[, 1L], method = method_vec[2L]) %>%
+            {matrix(., nrow = 1L, dimnames = list(NULL, names(.)))} %>%
+            list()
+        )
       }
     )
   }
