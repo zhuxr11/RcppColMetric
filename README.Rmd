@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/RcppColMetric)](https://CRAN.R-project.org/package=RcppColMetric)
 [![R-CMD-check](https://github.com/zhuxr11/RcppColMetric/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/zhuxr11/RcppColMetric/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/zhuxr11/RcppColMetric/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/zhuxr11/RcppColMetric/actions/workflows/pkgdown.yaml)
-[![codecov](https://github.com/zhuxr11/RcppColMetric/actions/workflows/codecov.yaml/badge.svg)](https://github.com/zhuxr11/RcppColMetric/actions/workflows/codecov.yaml)
+[![Codecov test coverage](https://codecov.io/gh/zhuxr11/RcppColMetric/branch/master/graph/badge.svg)](https://app.codecov.io/gh/zhuxr11/RcppColMetric?branch=master)
 [![Download stats](https://cranlogs.r-pkg.org/badges/grand-total/RcppColMetric)](https://CRAN.R-project.org/package=RcppColMetric)
 <!-- badges: end -->
 
