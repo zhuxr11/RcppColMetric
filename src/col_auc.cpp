@@ -10,6 +10,7 @@ List pair_comp(const CharacterVector& x) {
     for (R_xlen_t lvl_j = lvl_i + 1; lvl_j < x.length(); lvl_j++) {
       CharacterVector x_subset = {x(lvl_i), x(lvl_j)};
       out(cur_idx) = x_subset;
+      cur_idx++;
     }
   }
   return out;
