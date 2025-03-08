@@ -1,6 +1,6 @@
 Package: RcppColMetric
 Title: Efficient Column-Wise Metric Computation against Common Vector
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     person("Xiurui", "Zhu", , "zxr6@163.com", role = c("aut", "cre"),
            comment = NULL)
