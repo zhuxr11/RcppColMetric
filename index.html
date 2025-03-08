@@ -67,7 +67,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><strong>Package</strong>: <a href="https://github.com/zhuxr11/RcppColMetric" class="external-link"><em>RcppColMetric</em></a> 0.1.0<br><strong>Author</strong>: Xiurui Zhu<br><strong>Modified</strong>: 2025-03-08 14:17:24<br><strong>Compiled</strong>: 2025-03-08 16:55:53</p>
+<p><strong>Package</strong>: <a href="https://github.com/zhuxr11/RcppColMetric" class="external-link"><em>RcppColMetric</em></a> 0.1.0<br><strong>Author</strong>: Xiurui Zhu<br><strong>Modified</strong>: 2025-03-08 18:17:18<br><strong>Compiled</strong>: 2025-03-08 18:17:53</p>
 <p>The goal of <code>RcppColMetric</code> is to efficiently compute metrics between various vectors and a common vector. This is common in data science, such as computing performance metrics between each feature and a common response. <a href="https://CRAN.R-project.org/package=Rcpp" class="external-link"><code>Rcpp</code></a> is used to efficiently iterate over vectors through compiled code. You may extend its utilities by providing custom metrics that fit into the framework.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -109,10 +109,10 @@
 <span>  check <span class="op">=</span> <span class="st">"identical"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: microseconds</span></span>
-<span><span class="co">#&gt;         expr     min      lq     mean   median      uq      max neval</span></span>
-<span><span class="co">#&gt;    col_auc_r 521.600 561.901 648.8301 635.3505 676.651 1091.802   100</span></span>
-<span><span class="co">#&gt;  col_auc_cpp 210.601 232.701 263.5180 258.1500 283.351  402.001   100</span></span></code></pre></div>
-<p>As can be seen, the median speed of computation from <code>RcppColMetric</code> is 2.461 times faster.</p>
+<span><span class="co">#&gt;         expr     min       lq     mean   median       uq     max neval</span></span>
+<span><span class="co">#&gt;    col_auc_r 514.600 544.2005 623.3241 613.2515 666.1505 985.601   100</span></span>
+<span><span class="co">#&gt;  col_auc_cpp 200.401 222.2010 244.9679 236.0010 266.8010 391.501   100</span></span></code></pre></div>
+<p>As can be seen, the median speed of computation from <code>RcppColMetric</code> is 2.599 times faster.</p>
 <p>If there are multiple sets of features and responses, you may use the vectorized version <code><a href="reference/col_auc_vec.html">col_auc_vec()</a></code>, which uses compiled code to speed up iterations and returns a list.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/col_auc_vec.html">col_auc_vec</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">cats</span><span class="op">[</span>, <span class="fl">2L</span><span class="op">:</span><span class="fl">3L</span><span class="op">]</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">cats</span><span class="op">[</span>, <span class="fl">1L</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
@@ -134,10 +134,10 @@
 <span>  check <span class="op">=</span> <span class="st">"identical"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: microseconds</span></span>
-<span><span class="co">#&gt;              expr      min       lq      mean    median       uq      max neval</span></span>
-<span><span class="co">#&gt;    col_mut_info_r 1570.701 1689.751 1884.9300 1909.1510 2008.501 2495.402   100</span></span>
-<span><span class="co">#&gt;  col_mut_info_cpp  623.301  650.701  783.9661  676.6515  736.001 8755.601   100</span></span></code></pre></div>
-<p>As can be seen, the median speed of computation from <code>RcppColMetric</code> is 2.821 times faster.</p>
+<span><span class="co">#&gt;              expr      min       lq     mean   median        uq      max neval</span></span>
+<span><span class="co">#&gt;    col_mut_info_r 1587.200 1685.351 1884.131 1766.001 1964.9510 4803.800   100</span></span>
+<span><span class="co">#&gt;  col_mut_info_cpp  618.401  641.551  691.325  659.651  721.6015  943.101   100</span></span></code></pre></div>
+<p>As can be seen, the median speed of computation from <code>RcppColMetric</code> is 2.677 times faster.</p>
 <p>If there are multiple sets of features and responses, you may use the vectorized version <code><a href="reference/col_mut_info_vec.html">col_mut_info_vec()</a></code>, which uses compiled code to speed up iterations and returns a list.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/col_mut_info_vec.html">col_mut_info_vec</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">cats</span><span class="op">[</span>, <span class="fl">2L</span><span class="op">:</span><span class="fl">3L</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">cats</span><span class="op">[</span>, <span class="fl">1L</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
@@ -252,7 +252,7 @@
 <li><a href="https://CRAN.R-project.org/package=RcppColMetric" class="external-link"><img src="https://www.r-pkg.org/badges/version/RcppColMetric" alt="CRAN status"></a></li>
 <li><a href="https://github.com/zhuxr11/RcppColMetric/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/zhuxr11/RcppColMetric/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://github.com/zhuxr11/RcppColMetric/actions/workflows/pkgdown.yaml" class="external-link"><img src="https://github.com/zhuxr11/RcppColMetric/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"></a></li>
-<li><a href="https://github.com/zhuxr11/RcppColMetric/actions/workflows/codecov.yaml" class="external-link"><img src="https://github.com/zhuxr11/RcppColMetric/actions/workflows/codecov.yaml/badge.svg" alt="codecov"></a></li>
+<li><a href="https://app.codecov.io/gh/zhuxr11/RcppColMetric?branch=master" class="external-link"><img src="https://codecov.io/gh/zhuxr11/RcppColMetric/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
 <li><a href="https://CRAN.R-project.org/package=RcppColMetric" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/RcppColMetric" alt="Download stats"></a></li>
 </ul>
 </div>
