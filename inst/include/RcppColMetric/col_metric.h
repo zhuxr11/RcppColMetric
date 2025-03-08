@@ -24,7 +24,7 @@ namespace RcppColMetric
     R_xlen_t n_feature = utils::get_feature_count(x);
     R_xlen_t n_sample = utils::get_sample_count(x);
     if (n_sample != y.length()) {
-      stop("col_auc: length(y) and nrow(X) must be the same.");
+      stop("col_metric: length(y) and nrow(X) must be the same.");
     }
     // Derive comparisons
     Matrix<T3> out(metric.output_dim, n_feature);
