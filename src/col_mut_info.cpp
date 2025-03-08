@@ -1,6 +1,10 @@
 #include <Rcpp.h>
+#include <R.h>
+#include <Rdefines.h>
 #include "../inst/include/RcppColMetric.h"
 using namespace Rcpp;
+
+// These functions are copied from: https://github.com/cran/infotheo/blob/master/src/entropy.cpp @4c12f5610dc2e204e7d9000c92a4057dc069c405
 
 double entropy_empirical(std::map< std::vector<int> ,int > frequencies, int nb_samples) {
   double e = 0;
@@ -70,16 +74,39 @@ double entropy(const int *d, int nsamples, int nvars, int c, bool *v) {
   return H;
 }
 
+SEXP entropyR (SEXP Rdata, SEXP Rnrows, SEXP Rncols, SEXP Rchoice)
+{
+  const int *data;
+  const int *nrows, *ncols, *choice;
+  SEXP res;
+  PROTECT(Rdata = AS_INTEGER(Rdata));
+  PROTECT(Rnrows= AS_INTEGER(Rnrows));
+  PROTECT(Rncols= AS_INTEGER(Rncols));
+  PROTECT(Rchoice= AS_INTEGER(Rchoice));
+  data = INTEGER_POINTER(Rdata);
+  nrows= INTEGER_POINTER(Rnrows);
+  ncols= INTEGER_POINTER(Rncols);
+  choice= INTEGER_POINTER(Rchoice);
+  PROTECT(res = NEW_NUMERIC(1));
+  bool *sel = new bool[*ncols];
+  for( int i=0; i<*ncols; ++i )
+    sel[i] = true;
+  REAL(res)[0] = entropy(data, *nrows, *ncols, *choice, sel);
+  UNPROTECT(5);
+  return res;
+}
+
+// Compute mutual information from entrtopies
 double mut_info(const IntegerVector& x, const IntegerVector& y, const int& method) {
   if (x.length() != y.length()) {
     stop("length(x) does not match length(y)");
   }
-  bool v = true;
-  double entropy_x = entropy(x.begin(), x.length(), 1, method, &v);
-  double entropy_y = entropy(y.begin(), y.length(), 1, method, &v);
+  NumericVector entropy_x = entropyR(x, wrap(x.length()), wrap(1), wrap(method));
+  NumericVector entropy_y = entropyR(y, wrap(y.length()), wrap(1), wrap(method));
   IntegerVector xy = RcppColMetric::utils::concat_vec<INTSXP, int>(x, y);
-  double entropy_xy = entropy(xy.begin(), x.length(), 2, method, &v);
-  return entropy_x + entropy_y - entropy_xy;
+  NumericVector entropy_xy = entropyR(xy, wrap(x.length()), wrap(2), wrap(method));
+  NumericVector out = entropy_x + entropy_y - entropy_xy;
+  return out(0);
 }
 
 class MutInfoMetric: public RcppColMetric::Metric<INTSXP, INTSXP, REALSXP>
