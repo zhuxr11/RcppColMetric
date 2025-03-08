@@ -98,9 +98,6 @@ SEXP entropyR (SEXP Rdata, SEXP Rnrows, SEXP Rncols, SEXP Rchoice)
 
 // Compute mutual information from entrtopies
 double mut_info(const IntegerVector& x, const IntegerVector& y, const int& method) {
-  if (x.length() != y.length()) {
-    stop("length(x) does not match length(y)");
-  }
   NumericVector entropy_x = entropyR(x, wrap(x.length()), wrap(1), wrap(method));
   NumericVector entropy_y = entropyR(y, wrap(y.length()), wrap(1), wrap(method));
   IntegerVector xy = RcppColMetric::utils::concat_vec<INTSXP, int>(x, y);
