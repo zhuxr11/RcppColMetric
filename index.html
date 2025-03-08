@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">RcppColMetric</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
       </span>
     </div>
 
@@ -67,7 +67,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><strong>Package</strong>: <a href="https://github.com/zhuxr11/RcppColMetric" class="external-link"><em>RcppColMetric</em></a> 0.0.0.9000<br><strong>Author</strong>: Xiurui Zhu<br><strong>Modified</strong>: 2025-03-03 18:11:42<br><strong>Compiled</strong>: 2025-03-03 18:11:49</p>
+<p><strong>Package</strong>: <a href="https://github.com/zhuxr11/RcppColMetric" class="external-link"><em>RcppColMetric</em></a> 0.1.0<br><strong>Author</strong>: Xiurui Zhu<br><strong>Modified</strong>: 2025-03-03 18:11:42<br><strong>Compiled</strong>: 2025-03-08 13:01:18</p>
 <p>The goal of <code>RcppColMetric</code> is to efficiently compute metrics between various vectors and a common vector. This is common in data science, such as computing performance metrics between each feature and a common response. <a href="https://CRAN.R-project.org/package=Rcpp" class="external-link"><code>Rcpp</code></a> is used to efficiently iterate over vectors through compiled code. You may extend its utilities by providing custom metrics that fit into the framework.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -109,10 +109,10 @@
 <span>  check <span class="op">=</span> <span class="st">"identical"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: microseconds</span></span>
-<span><span class="co">#&gt;         expr   min     lq   mean median    uq    max neval</span></span>
-<span><span class="co">#&gt;    col_auc_r 523.0 554.85 620.06  621.7 653.9 1031.3   100</span></span>
-<span><span class="co">#&gt;  col_auc_cpp 128.3 147.30 165.06  161.3 175.1  287.0   100</span></span></code></pre></div>
-<p>As can be seen, the median speed of computation from <code>RcppColMetric</code> is 3.854 times faster.</p>
+<span><span class="co">#&gt;         expr     min       lq     mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;    col_auc_r 519.001 561.5010 625.9780 625.8010 655.0015 1027.701   100</span></span>
+<span><span class="co">#&gt;  col_auc_cpp 203.801 227.2005 251.1549 244.3515 268.3005  352.101   100</span></span></code></pre></div>
+<p>As can be seen, the median speed of computation from <code>RcppColMetric</code> is 2.561 times faster.</p>
 <p>If there are multiple sets of features and responses, you may use the vectorized version <code><a href="reference/col_auc_vec.html">col_auc_vec()</a></code>, which uses compiled code to speed up iterations and returns a list.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/col_auc_vec.html">col_auc_vec</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">cats</span><span class="op">[</span>, <span class="fl">2L</span><span class="op">:</span><span class="fl">3L</span><span class="op">]</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">cats</span><span class="op">[</span>, <span class="fl">1L</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
@@ -134,10 +134,10 @@
 <span>  check <span class="op">=</span> <span class="st">"identical"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: microseconds</span></span>
-<span><span class="co">#&gt;              expr    min      lq     mean  median      uq     max neval</span></span>
-<span><span class="co">#&gt;    col_mut_info_r 1638.4 1737.05 2057.062 1856.95 1966.75 13168.5   100</span></span>
-<span><span class="co">#&gt;  col_mut_info_cpp  361.1  389.25  449.926  422.55  474.70  1190.1   100</span></span></code></pre></div>
-<p>As can be seen, the median speed of computation from <code>RcppColMetric</code> is 4.395 times faster.</p>
+<span><span class="co">#&gt;              expr      min       lq     mean   median       uq       max neval</span></span>
+<span><span class="co">#&gt;    col_mut_info_r 1605.500 1808.550 2069.170 1950.401 2056.752 10252.701   100</span></span>
+<span><span class="co">#&gt;  col_mut_info_cpp  624.001  689.401  752.696  733.951  779.901  1182.102   100</span></span></code></pre></div>
+<p>As can be seen, the median speed of computation from <code>RcppColMetric</code> is 2.657 times faster.</p>
 <p>If there are multiple sets of features and responses, you may use the vectorized version <code><a href="reference/col_mut_info_vec.html">col_mut_info_vec()</a></code>, which uses compiled code to speed up iterations and returns a list.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/col_mut_info_vec.html">col_mut_info_vec</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">cats</span><span class="op">[</span>, <span class="fl">2L</span><span class="op">:</span><span class="fl">3L</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">cats</span><span class="op">[</span>, <span class="fl">1L</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
