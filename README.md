@@ -10,13 +10,15 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![CRAN
 status](https://www.r-pkg.org/badges/version/RcppColMetric)](https://CRAN.R-project.org/package=RcppColMetric)
 [![R-CMD-check](https://github.com/zhuxr11/RcppColMetric/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/zhuxr11/RcppColMetric/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/zhuxr11/RcppColMetric/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/zhuxr11/RcppColMetric/actions/workflows/pkgdown.yaml)
+[![codecov](https://github.com/zhuxr11/RcppColMetric/actions/workflows/codecov.yaml/badge.svg)](https://github.com/zhuxr11/RcppColMetric/actions/workflows/codecov.yaml)
 [![Download
 stats](https://cranlogs.r-pkg.org/badges/grand-total/RcppColMetric)](https://CRAN.R-project.org/package=RcppColMetric)
 <!-- badges: end -->
 
 **Package**: [*RcppColMetric*](https://github.com/zhuxr11/RcppColMetric)
-0.1.0<br /> **Author**: Xiurui Zhu<br /> **Modified**: 2025-03-03
-18:11:42<br /> **Compiled**: 2025-03-08 13:01:18
+0.1.0<br /> **Author**: Xiurui Zhu<br /> **Modified**: 2025-03-08
+14:17:24<br /> **Compiled**: 2025-03-08 16:55:53
 
 The goal of `RcppColMetric` is to efficiently compute metrics between
 various vectors and a common vector. This is common in data science,
@@ -79,13 +81,13 @@ library(caTools)
   check = "identical"
 ))
 #> Unit: microseconds
-#>         expr     min       lq     mean   median       uq      max neval
-#>    col_auc_r 519.001 561.5010 625.9780 625.8010 655.0015 1027.701   100
-#>  col_auc_cpp 203.801 227.2005 251.1549 244.3515 268.3005  352.101   100
+#>         expr     min      lq     mean   median      uq      max neval
+#>    col_auc_r 521.600 561.901 648.8301 635.3505 676.651 1091.802   100
+#>  col_auc_cpp 210.601 232.701 263.5180 258.1500 283.351  402.001   100
 ```
 
 As can be seen, the median speed of computation from `RcppColMetric` is
-2.561 times faster.
+2.461 times faster.
 
 If there are multiple sets of features and responses, you may use the
 vectorized version `col_auc_vec()`, which uses compiled code to speed up
@@ -115,13 +117,13 @@ library(infotheo)
   check = "identical"
 ))
 #> Unit: microseconds
-#>              expr      min       lq     mean   median       uq       max neval
-#>    col_mut_info_r 1605.500 1808.550 2069.170 1950.401 2056.752 10252.701   100
-#>  col_mut_info_cpp  624.001  689.401  752.696  733.951  779.901  1182.102   100
+#>              expr      min       lq      mean    median       uq      max neval
+#>    col_mut_info_r 1570.701 1689.751 1884.9300 1909.1510 2008.501 2495.402   100
+#>  col_mut_info_cpp  623.301  650.701  783.9661  676.6515  736.001 8755.601   100
 ```
 
 As can be seen, the median speed of computation from `RcppColMetric` is
-2.657 times faster.
+2.821 times faster.
 
 If there are multiple sets of features and responses, you may use the
 vectorized version `col_mut_info_vec()`, which uses compiled code to

@@ -19,6 +19,8 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/RcppColMetric)](https://CRAN.R-project.org/package=RcppColMetric)
 [![R-CMD-check](https://github.com/zhuxr11/RcppColMetric/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/zhuxr11/RcppColMetric/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/zhuxr11/RcppColMetric/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/zhuxr11/RcppColMetric/actions/workflows/pkgdown.yaml)
+[![codecov](https://github.com/zhuxr11/RcppColMetric/actions/workflows/codecov.yaml/badge.svg)](https://github.com/zhuxr11/RcppColMetric/actions/workflows/codecov.yaml)
 [![Download stats](https://cranlogs.r-pkg.org/badges/grand-total/RcppColMetric)](https://CRAN.R-project.org/package=RcppColMetric)
 <!-- badges: end -->
 
