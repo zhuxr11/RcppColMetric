@@ -116,9 +116,6 @@ public:
   MutInfoMetric(const RObject& x, const IntegerVector& y, const int& method_, const Nullable<List>& args = R_NilValue): method(method_) {
     output_dim = 1;
   }
-  virtual Nullable<CharacterVector> row_names(const RObject& x, const IntegerVector& y, const Nullable<List>& args = R_NilValue) const override {
-    return R_NilValue;
-  }
   virtual NumericVector calc_col(const IntegerVector& x, const IntegerVector& y, const R_xlen_t& i, const Nullable<List>& args = R_NilValue) const override {
     double res = mut_info(x, y, method);
     NumericVector out(output_dim, res);
