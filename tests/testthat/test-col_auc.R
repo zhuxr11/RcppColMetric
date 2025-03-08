@@ -22,10 +22,10 @@ if (require(MASS, quietly = TRUE) == TRUE) {
         )
         # Tests about directions
         testthat::expect_no_error(
-          col_auc(cats[, 2L:3L], cats[, 1L], args = list(dirction = ">"))
+          col_auc(cats[, 2L:3L], cats[, 1L], args = list(direction = ">"))
         )
         testthat::expect_no_error(
-          col_auc(cats[, 2L:3L], cats[, 1L], args = list(dirction = "<"))
+          col_auc(cats[, 2L:3L], cats[, 1L], args = list(direction = "<"))
         )
         # Tests about non-existing levels
         testthat::expect_no_error(
@@ -35,6 +35,11 @@ if (require(MASS, quietly = TRUE) == TRUE) {
         testthat::expect_equal(
           col_auc_vec(list(cats[, 2L:3L]), list(cats[, 1L])),
           list(caTools::colAUC(cats[, 2L:3L], cats[, 1L]))
+        )
+        # Recycle over x/y
+        testthat::expect_equal(
+          col_auc_vec(list(cats[, 2L:3L]), replicate(2L, cats[, 1L], simplify = FALSE)),
+          replicate(2L, caTools::colAUC(cats[, 2L:3L], cats[, 1L]), simplify = FALSE)
         )
         testthat::expect_equal(
           col_auc_vec(list(cats[, 2L:3L]),

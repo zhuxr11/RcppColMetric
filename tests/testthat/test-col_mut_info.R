@@ -24,6 +24,11 @@ if (require(MASS, quietly = TRUE) == TRUE) {
             )
           }
         ))
+        # Error about length mismatch
+        testthat::expect_error(
+          col_mut_info(round(cats[, 2L:3L]), cats[1L:10L, 1L]),
+          "length\\(y\\) and nrow\\(X\\) must be the same"
+        )
         # Tests about vectorized function
         testthat::expect_equal(
           col_mut_info_vec(list(round(cats[, 2L:3L])), list(cats[, 1L])),
