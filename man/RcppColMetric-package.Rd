@@ -4,7 +4,7 @@
 \name{RcppColMetric-package}
 \alias{RcppColMetric}
 \alias{RcppColMetric-package}
-\title{RcppColMetric: Efficient Column-Wise Metric Computation against Common Vector}
+\title{RcppColMetric: Efficient Column-Wise Metric Computation Against Common Vector}
 \description{
 In data science, it is a common practice to compute a series of columns (e.g. features) against a common response vector. Various metrics are provided with efficient computation implemented with 'Rcpp'.
 }
